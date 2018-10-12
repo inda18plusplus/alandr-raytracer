@@ -1,13 +1,15 @@
 # C++ Ray Tracer
 
-##Example Images
+[![Build Status](https://travis-ci.com/inda18plusplus/alandr-raytracer.svg?branch=master)](https://travis-ci.com/inda18plusplus/alandr-raytracer)
+
+## Example Images
 
 | Description | Image |
 | --- | --- |
 | The default image generated when running right now | ![](img/standard.png) |
 | Odd things may happen if everything's a mirror | ![](img/mirrorRoom.png) |
 
-##TODO
+## TODO
 
 - [ ] Dynamic scene loading
 - [ ] Make light physically present and rendered

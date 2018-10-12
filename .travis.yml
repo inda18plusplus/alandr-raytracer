@@ -1,0 +1,21 @@
+language: cpp
+
+compiler:
+  - gcc
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - libsfml-dev
+      - g++-8
+
+before_script:
+  - export CXX=/usr/bin/g++-8
+
+  - mkdir build
+  - cd build
+  - cmake ..
+  
+script: make
