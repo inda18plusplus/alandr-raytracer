@@ -39,7 +39,8 @@ int main() {
 	scene.transferObject(new Sphere(&scene, {0, -4, 0}, 1))->setBaseColour({0x8f, 0x8f, 0x8f}).setReflectivity(.5);
 	scene.transferObject(new Sphere(&scene, {-4, -4, 4}, 1))->setBaseColour({0x8f, 0x00, 0x8f});
 
-	scene.transferLight(new Light({0,0,0}, 1000.0f));
+	scene.transferLight(new Light({3.9,3.9,0}, 500.0f));
+	scene.transferLight(new Light({-3.9,3.9,0}, 500.0f));
 
 	scene.renderTo(image, {{0, -3, -4},{1,0,0}}); //Do not touch the second vector, it won't work, and might bugger everything
 
