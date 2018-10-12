@@ -85,3 +85,14 @@ Colour::operator sf::Color() const {
 			std::clamp(_a, 0.0f, 1.0f) * 0xff
 			);
 }
+
+Colour::operator unsigned int() const {
+
+	unsigned int newr = (unsigned int)(std::clamp(_r, 0.0f, 1.0f) * 0xff) << 24;
+	unsigned int newg = (unsigned int)(std::clamp(_g, 0.0f, 1.0f) * 0xff) << 16;
+	unsigned int newb = (unsigned int)(std::clamp(_b, 0.0f, 1.0f) * 0xff) << 8;
+	unsigned int newa = (unsigned int)(std::clamp(_a, 0.0f, 1.0f) * 0xff) << 0;
+
+	return (newr | newg | newb | newa);
+
+}

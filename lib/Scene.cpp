@@ -5,6 +5,9 @@
 #include "Scene.hpp"
 
 #include <algorithm>
+#include <atomic>
+#include <future>
+#include <thread>
 
 #include <SFML/Graphics/Image.hpp>
 
@@ -29,41 +32,58 @@ std::shared_ptr<sf::Image> Scene::render(unsigned int width, unsigned int height
 
 	return image;
 }
-
 void Scene::renderTo(std::shared_ptr<sf::Image> image, const Camera &cam) {
 
-	long sizeX = image->getSize().x;
-	long sizeY = image->getSize().y;
-	float dX = 1.0f/sizeX;
-	float dY = 1.0f/sizeY;
+	const unsigned int sizeX = image->getSize().x;
+	const unsigned int sizeY = image->getSize().y;
+	const float dX = 1.0f/sizeX;
+	const float dY = 1.0f/sizeY;
 
-	for (unsigned int x = 0; x < image->getSize().x; ++x) {
-		for (unsigned int y = 0; y < image->getSize().y; ++y) {
+	const unsigned long imageSize = sizeX * sizeY;
+	auto* imageArr = new unsigned int[imageSize];
 
-			Vec3f dir((dX*(x-sizeX*.5))*2, (-dY*(y-sizeY*.5))*2, 1);
-			Ray r(cam.pos(), dir);
+	std::vector<std::future<void>> threads;
+	std::atomic<unsigned long> workingIndex = 0;
+	int hwThreads = std::thread::hardware_concurrency();
 
-			auto ret = r.trace(*this);
-			if(ret) {
-				ret->deGamma();
-				image->setPixel(x, y, static_cast<sf::Color>(*ret));
+	if(hwThreads == 0)
+		hwThreads = 1;
+
+	for (int i = 0; i < hwThreads; ++i) {
+		threads.emplace_back(std::async([this, &workingIndex, sizeX, sizeY, dX, dY, imageSize, imageArr, &cam]() -> void {
+			for(;;) {
+
+				unsigned long index = workingIndex++;
+				if(index > imageSize)
+					break;
+
+				const int x = index % sizeX;
+				const int y = index / sizeX;
+
+				Vec3f dir((dX*(x-sizeX*.5))*2, (-dY*(y-sizeY*.5))*2, 1);
+
+				Ray r(cam.pos(), dir);
+
+				auto ret = r.trace(*this);
+				if(ret) {
+					//Might be able to mutate the image directly, if it's thread-safe in this case
+					imageArr[index] = static_cast<unsigned int>(*ret);
+				}
+
 			}
-
-
-			/*if(!intersections.empty()) {
-
-				std::sort(intersections.begin(), intersections.end(), [cam](Intersection& v1, Intersection& v2){
-					return v1.pos().distance(cam.pos()) < v2.pos().distance(cam.pos());
-				});
-
-				auto& intersection = intersections[0];
-
-				int scalar = 0x8f + (1 - intersection.normal().dotProduct(dir)) * 0x8f;
-				auto col = intersection.color() * sf::Color(scalar, scalar, scalar, 0xff);
-				image->setPixel(x, y, col);
-
-			}*/
-		}
+		}));
 	}
+
+	for (auto& f : threads) {
+		f.get();
+	}
+
+	for (unsigned long i = 0; i < imageSize; ++i) {
+		const int x = i % sizeX;
+		const int y = i / sizeX;
+		image->setPixel(x, y, sf::Color(imageArr[i]));
+	}
+
+	delete[] imageArr;
 
 }

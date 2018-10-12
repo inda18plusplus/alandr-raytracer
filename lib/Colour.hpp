@@ -33,6 +33,7 @@ public:
 	Colour& operator+=(const Colour& col);
 
 	explicit operator sf::Color() const;
+	explicit operator unsigned int() const;
 
 	//Interpolate with fraction of other colour (fraction is how much of the new colour should be the argument)
 	Colour interpolate(float fraction, const Colour& other) const;
