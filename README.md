@@ -18,3 +18,5 @@
 - [ ] Polygon rendering
 - [ ] .obj loading
 - [ ] Transparency
+- [ ] An actually working camera positioning system
+- [ ] Multithread the rendering algorithm
