@@ -8,14 +8,26 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - libsfml-dev
       - g++-8
+      - libopenal-dev
+      - libx11-dev
+      - libx11-xcb-dev
+      - libxrandr-dev
+      - libudev-dev
+      - libvorbis-dev
+      - libflac-dev
+      - libogg-dev
 
 before_script:
   - export CXX=/usr/bin/g++-8
+  
+  - chmod +x build_sfml.sh
 
   - mkdir build
   - cd build
+  
+  - ../build_sfml.sh
+  
   - cmake ..
   
 script: make
