@@ -19,4 +19,4 @@
 - [ ] .obj loading
 - [ ] Transparency
 - [ ] An actually working camera positioning system
-- [ ] Multithread the rendering algorithm
+- [X] Multithread the rendering algorithm
